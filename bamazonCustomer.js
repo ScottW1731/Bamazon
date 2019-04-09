@@ -20,8 +20,19 @@ function displayAll(){
     connection.query("SELECT * FROM products", function(error, response){
         if (error) throw error;
         for(var i= 0; i < response.length; i++){
-            console.log(' ID: ' + response[i].id +' >> Product Name: ' + response[i].product_name +' >>  Department Name: ' + response[i].department_name
-             +' >>  Price: ' + response[i].price +' >>  Stock capacity: ' + response[i].stock_capacity+ "  \n");
+            console.log(
+                    `ID: ${response[i].id} 
+            Product Name: ${response[i].product_name}
+            Department Name: ${response[i].department_name}
+            Price: ${response[i].price}
+            Stock capacity: ${response[i].stock_capacity}
+
+            ` 
+            )
+       
+            // console.log(' ID: ' + response[i].id +' >> Product Name: ' + response[i].product_name +' >>  Department Name: ' + response[i].department_name
+            //  +' >>  Price: ' + response[i].price +' >>  Stock capacity: ' + response[i].stock_capacity+ "  \n");
+          
         }
         // console.log("\n");
         // function will allow user to select a product from the database
