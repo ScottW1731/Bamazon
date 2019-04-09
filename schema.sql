@@ -1,3 +1,4 @@
+ database if exists Bamazon_DB;
 Create database Bamazon_DB;
 
 USE Bamazon_DB;
