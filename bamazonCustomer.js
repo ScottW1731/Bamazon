@@ -20,15 +20,8 @@ function displayAll(){
     connection.query("SELECT * FROM products", function(error, response){
         if (error) throw error;
         for(var i= 0; i < response.length; i++){
-            // console.log('-------------------');
-            // console.log('ID: ' + response[i].id);
-            // console.log('Product Name: ' + response[i].product_name);
-            // console.log('Department Name: ' + response[i].department_name);
-            // console.log('Price: ' + response[i].price);
-            // console.log('Stock Quantity: ' + response[i].stock_quantity);
-            // console.log('-------------------');
-            console.log(' ID: ' + response[i].id +' || Product Name: ' + response[i].product_name +' ||  Department Name: ' + response[i].department_name
-             +' ||  Price: ' + response[i].price +' ||  Stock capacity: ' + response[i].stock_capacity+ "  \n");
+            console.log(' ID: ' + response[i].id +' >> Product Name: ' + response[i].product_name +' >>  Department Name: ' + response[i].department_name
+             +' >>  Price: ' + response[i].price +' >>  Stock capacity: ' + response[i].stock_capacity+ "  \n");
         }
         // console.log("\n");
         // function will allow user to select a product from the database
@@ -38,10 +31,9 @@ function displayAll(){
 
 // function to select products use inquirer 
 
-// what is a promise?
-// function makes promise
-// how to solve a promise
 
+// function makes promise
+// solve a promise
 
 function customerSelection(){
     
@@ -61,8 +53,8 @@ function customerSelection(){
         },
         {
             type: "confirm",
-            feedback:"Are you sure?",
-            name:"purchase",
+            feedback:"confirm selection.",
+            name:"select",
             default: true
         }
     ])
@@ -70,11 +62,11 @@ function customerSelection(){
     .then(function(response){
         var choices = response.choices;
         var quantity  = parseInt(response.quantity);
-        var confirm = response.purchase;
+        var confirm = response.select;
 
-        // validates purchase, the sell
+        // validates select, then sell
         if (confirm) {
-            validatingPurchase(choices, quantity);
+            validatingselect(choices, quantity);
 
             // prompt for user if otherwise to send through again
         } else{
@@ -83,9 +75,8 @@ function customerSelection(){
     });
 }
 
-
-// create function to process a purchase
-function validatingPurchase(choices, quantity) {
+// create function to process a select
+function validatingselect(choices, quantity) {
     // what is the "WHERE id=?" ?
     connection.query("SELECT * FROM products WHERE id=?", [choices], function(error, response){
         if(error) throw error;
@@ -96,9 +87,8 @@ function validatingPurchase(choices, quantity) {
         if(quantity <= parseInt(response[0].stock_capacity)){
             currentCapacity = parseInt(response[0].stock_capacity) - quantity;
 
-            // call update to the products after purchase
-            productUpdate(currentCapacity, choices);
-
+            // call update to the products after select
+            updateCapacity(currentCapacity, choices);
 
             // display price of total items bought
             price = parseInt(response[0].price);
@@ -110,20 +100,42 @@ function validatingPurchase(choices, quantity) {
         } else {
             // if user selects an amount that is impossible then prompt user so
             // and send back to select correctly
-            console.log("I am sorry, you an invalid selection!");
-            customerSelection();
+            console.log("I am sorry, you have an invalid selection!");
+            buyMore();
         }
     });
 }
 
 
-// update original capacity minus purchased amount
+// update original capacity minus selected amount
 function updateCapacity (quantity, choices){
     var query = connection.query(
         "UPDATE products SET stock_capacity=? WHERE id=?",
     [quantity, choices],
-    )
+    );
 }
 
 // get new input
 // option to change input function
+// ask user what else they want
+function buyMore(){
+    inquirer.prompt({
+        type: "confirm",
+        feedback:"Are you sure?",
+        name:"purchase",
+        choices: ["Y","N"]
+    }).then(function(response){
+        var choices = response.choices;
+
+        // if yes log thank you for your business
+        if (choices === "Y") {
+            displayAll();
+        } else {
+            // if not log this
+            console.log("\n thank you come again! \n");
+
+            // end
+            connection.end();
+        }
+    });
+}
